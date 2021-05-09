@@ -1,4 +1,4 @@
-module cracker.com/base
+module github.com/crack007/api-base
 
 go 1.16
 
