@@ -1,7 +1,7 @@
 package route
 
 import (
-	"cracker.com/base/core"
+	"github.com/crack007/api-base/core"
 	"github.com/gin-gonic/gin"
 )
 

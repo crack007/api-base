@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"cracker.com/base/common/exception"
+	"github.com/crack007/api-base/common/exception"
 	"github.com/gin-gonic/gin"
 )
 

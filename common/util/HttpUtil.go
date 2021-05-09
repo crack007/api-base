@@ -1,7 +1,7 @@
 package util
 
 import (
-	"cracker.com/base/common/config"
+	"github.com/crack007/api-base/common/config"
 	"io/ioutil"
 	"log"
 	"net/http"

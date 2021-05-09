@@ -1,10 +1,10 @@
 package bootstrap
 
 import (
-	"cracker.com/base/common/config"
-	"cracker.com/base/core"
-	"cracker.com/base/route"
 	"fmt"
+	"github.com/crack007/api-base/common/config"
+	"github.com/crack007/api-base/core"
+	"github.com/crack007/api-base/route"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"

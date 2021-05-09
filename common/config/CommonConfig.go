@@ -1,6 +1,6 @@
 package config
 
-import "cracker.com/base/common/constant"
+import "github.com/crack007/api-base/common/constant"
 
 type CommonConfig struct {
 	env         string `desc:"运行环境"`
