@@ -60,7 +60,17 @@ func ApiV1() {
 
 - 自定义配置
 
-> 配置文件默认放在 config/config.yml
+> 配置文件路径默认 运行路径/config/config.yml
+
+> 配置文件路径可以通过启动参数定义，启动参数如下
+
+```
+
+--configName 参数值   配置文件名
+--configPath 参数值   配置文件路径
+--configType 参数值   配置文件类型(json,toml,yaml,hcl,env和java properties 配置类型)
+
+```
 
 ```go
 
@@ -170,6 +180,6 @@ app:
 
 # TODO-LIST
 
-- 支持配置路径自定义 [待完成]
+- 支持配置路径自定义 [已完成]
 
 - 缓存支持 [待完成]

@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"log"
 	"os"
@@ -24,7 +25,6 @@ func Init(app *core.App) {
 	if err != nil {
 		log.Fatal("获取RootPath失败：", err)
 	}
-
 	app.RootPath = dir
 	InitConfig(app)
 	InitDB(app)
@@ -33,12 +33,34 @@ func Init(app *core.App) {
 		app.InitResource(app)
 	}
 }
-
+func parseCommandArgs() {
+	pflag.String("configName", "", "配置文件名")
+	pflag.String("configType", "", "配置文件类型(json,toml,yaml,hcl,env和java properties 配置类型)")
+	pflag.String("configPath", "", "配置文件路径")
+	pflag.Parse()
+}
 func InitConfig(app *core.App) {
+	parseCommandArgs()
+	bindPFlagsErr := viper.BindPFlags(pflag.CommandLine)
+	if bindPFlagsErr != nil {
+		log.Println("BindPFlags Err:", bindPFlagsErr)
+	}
 	gin.DisableConsoleColor()
-	viper.SetConfigName("config")
-	viper.SetConfigType("yml")
-	viper.AddConfigPath(app.RootPath + "/config")
+	var configName = viper.GetString("configName")
+	if configName == "" {
+		configName = "appConfig"
+	}
+	var configType = viper.GetString("configType")
+	if configType == "" {
+		configType = "yml"
+	}
+	var configPath = viper.GetString("configPath")
+	if configPath == "" {
+		configPath = app.RootPath + "/config"
+	}
+	viper.SetConfigName(configName)
+	viper.SetConfigType(configType)
+	viper.AddConfigPath(configPath)
 	err := viper.ReadInConfig()
 	if err != nil {
 		loadDefaultConfig(app)
