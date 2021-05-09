@@ -60,7 +60,7 @@ func ApiV1() {
 
 - 自定义配置
 
-> 配置文件路径默认 运行路径/config/config.yml
+> 配置文件路径默认 运行路径/config/appConfig.yml
 
 > 配置文件路径可以通过启动参数定义，启动参数如下
 
