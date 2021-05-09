@@ -74,6 +74,9 @@ func InitCommonConfig(app *core.App) {
 	if app.InitConfig != nil {
 		app.InitConfig(app)
 	}
+	config.GetCommonConfig().SetEnv(viper.GetString("app.env"))
+	config.GetCommonConfig().SetHttpTimeout(viper.GetInt("app.httpTimeout"))
+	log.Println("InitCommonConfig... ok!")
 }
 func InitDBConfig(app *core.App) {
 	dbConfig := config.GetDbConfig()
