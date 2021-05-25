@@ -67,6 +67,9 @@ func InitConfig(app *core.App) {
 	}
 	InitDBConfig(app)
 	InitCommonConfig(app)
+	if app.IsProd() {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	app.Engine = gin.Default()
 }
 
@@ -76,6 +79,9 @@ func InitCommonConfig(app *core.App) {
 	}
 	config.GetCommonConfig().SetEnv(viper.GetString("app.env"))
 	config.GetCommonConfig().SetHttpTimeout(viper.GetInt("app.httpTimeout"))
+	if app.IsDev() {
+		viper.Debug()
+	}
 	log.Println("InitCommonConfig... ok!")
 }
 func InitDBConfig(app *core.App) {
