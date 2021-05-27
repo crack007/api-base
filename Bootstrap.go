@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"context"
 	"fmt"
 	"github.com/crack007/api-base/common/config"
 	"github.com/crack007/api-base/core"
@@ -11,9 +12,13 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strconv"
+	"syscall"
+	"time"
 )
 
 func loadDefaultConfig(app *core.App) {
@@ -118,8 +123,28 @@ func InitRouter(app *core.App) {
 	r.Init(app.Engine)
 }
 func Run(app *core.App) {
-	var err = app.Engine.Run(":" + strconv.Itoa(viper.GetInt("app.port")))
-	if err != nil {
-		log.Fatal("启动失败：", err.Error())
+	srv := &http.Server{
+		Addr:    ":" + strconv.Itoa(viper.GetInt("app.port")),
+		Handler: app.Engine,
 	}
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("ERROR listen: %s\n", err)
+		}
+	}()
+	gracefulExit(srv)
+}
+
+func gracefulExit(server *http.Server) {
+	ch := make(chan os.Signal)
+	signal.Notify(ch, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
+	sig := <-ch
+	log.Println("Signal: ", sig)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatal("ERROR Server Shutdown: ", err)
+		return
+	}
+	log.Println("Server exiting")
 }
