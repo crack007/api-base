@@ -47,12 +47,13 @@ import (
 var index = &controller.IndexController{}
 
 func ApiV1() {
-	route.CreateGroup("/v1/index", func(routerGroup *gin.RouterGroup) {
-    		// 添加中间件
-    		routerGroup.Use(commonMiddleware.ResponseMiddleware)
-    		// 添加路由,注意使用代理路由组件
-    		routerGroup.POST("/login", (&route.AgentRoute{Target: index.Login}).Agent)
-    	})
+	var groupIndex = route.CreateGroup("/v1/index")
+    	{
+    		groupIndex.Use(commonMiddleware.ResponseMiddleware)
+    		groupIndex.POST("/login", indexController.Login)
+    		groupIndex.POST("/refreshToken", indexController.RefreshToken)
+    		groupIndex.POST("/register", indexController.Register)
+    }
 }
 
 
