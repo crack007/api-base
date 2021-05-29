@@ -11,7 +11,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -28,7 +27,7 @@ func Init(app *core.App) {
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		log.Fatal("获取RootPath失败：", err)
+		core.GetLogger().Error(fmt.Sprintf("获取RootPath失败：%s", err))
 	}
 	app.RootPath = dir
 	InitConfig(app)
@@ -48,7 +47,7 @@ func InitConfig(app *core.App) {
 	parseCommandArgs()
 	bindPFlagsErr := viper.BindPFlags(pflag.CommandLine)
 	if bindPFlagsErr != nil {
-		log.Println("BindPFlags Err:", bindPFlagsErr)
+		core.GetLogger().Error(fmt.Sprintf("BindPFlags Err: %s", bindPFlagsErr))
 	}
 	gin.DisableConsoleColor()
 	var configName = viper.GetString("configName")
@@ -87,7 +86,7 @@ func InitCommonConfig(app *core.App) {
 	if app.IsDev() {
 		viper.Debug()
 	}
-	log.Println("InitCommonConfig... ok!")
+	core.GetLogger().Info("InitCommonConfig... ok!")
 }
 func InitDBConfig(app *core.App) {
 	dbConfig := config.GetDbConfig()
@@ -111,8 +110,7 @@ func InitDB(app *core.App) {
 	)
 	db, err := gorm.Open(dbConfig.Engine(), url)
 	if err != nil {
-		log.Println("db url=", url)
-		log.Fatal("db connect error", err)
+		core.GetLogger().Error(fmt.Sprintf("db connect error, url=%s err:%s", url, err))
 	}
 	db.DB().SetMaxIdleConns(dbConfig.MaxIdleConnections())
 	db.DB().SetMaxOpenConns(dbConfig.MaxOpenConnections())
@@ -129,7 +127,7 @@ func Run(app *core.App) {
 	}
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("ERROR listen: %s\n", err)
+			core.GetLogger().Error(fmt.Sprintf("listen: %s\n", err))
 		}
 	}()
 	gracefulExit(srv)
@@ -139,12 +137,12 @@ func gracefulExit(server *http.Server) {
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
 	sig := <-ch
-	log.Println("Signal: ", sig)
+	core.GetLogger().Warn(fmt.Sprintf("Signal: %s", sig.String()))
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		log.Fatal("ERROR Server Shutdown: ", err)
+		core.GetLogger().Error(fmt.Sprintf("Server Shutdown: %s", err))
 		return
 	}
-	log.Println("Server exiting")
+	core.GetLogger().Warn("Server exiting")
 }

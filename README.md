@@ -93,7 +93,7 @@ func init() {
 	viper.SetDefault("app.mode", "release")
 	viper.SetDefault("app.env", constant.ENV_DEV)
 	viper.SetDefault("app.jwtRefreshTokenExpired", 30*24*3600)
-	log.Println("初始化默认配置")
+	core.GetLogger().Info("初始化默认配置")
 }
 
 func InitAppConfig() {
