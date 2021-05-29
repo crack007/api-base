@@ -99,6 +99,10 @@ func InitDBConfig(app *core.App) {
 	dbConfig.SetCharset(viper.GetString("db.charset"))
 }
 func InitDB(app *core.App) {
+	if config.GetDbConfig().Engine() == "" {
+		//  没有db引擎则不使用数据库
+		return
+	}
 	dbConfig := config.GetDbConfig()
 	var url = fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		dbConfig.User(),
