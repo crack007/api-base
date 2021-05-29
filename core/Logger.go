@@ -20,14 +20,16 @@ func GetLogger() *Logger {
 			TimeKey:        "time",
 			LevelKey:       "level",
 			NameKey:        "logger",
-			CallerKey:      "caller",
+			CallerKey:      "call",
 			MessageKey:     "msg",
 			StacktraceKey:  "stacktrace",
 			LineEnding:     zapcore.DefaultLineEnding,
 			EncodeLevel:    zapcore.LowercaseLevelEncoder, // 小写编码器
 			EncodeTime:     zapcore.ISO8601TimeEncoder,    // ISO8601 UTC 时间格式
 			EncodeDuration: zapcore.SecondsDurationEncoder,
-			EncodeCaller:   zapcore.ShortCallerEncoder, // 全路径编码器
+			EncodeCaller: func(caller zapcore.EntryCaller, encoder zapcore.PrimitiveArrayEncoder) {
+				encoder.AppendString("")
+			}, // 全路径编码器
 		}
 		atom := zap.NewAtomicLevelAt(zap.DebugLevel)
 		logConfig := zap.Config{
