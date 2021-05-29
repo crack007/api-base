@@ -125,8 +125,10 @@ func InitRouter(app *core.App) {
 	r.Init(app.Engine)
 }
 func Run(app *core.App) {
+	address := ":" + strconv.Itoa(viper.GetInt("app.port"))
+	core.GetLogger().Warn("Server listen: " + address)
 	srv := &http.Server{
-		Addr:    ":" + strconv.Itoa(viper.GetInt("app.port")),
+		Addr:    address,
 		Handler: app.Engine,
 	}
 	go func() {
